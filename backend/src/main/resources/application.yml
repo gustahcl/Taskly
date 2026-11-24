@@ -20,6 +20,17 @@ spring:
 server:
   port: ${SERVER_PORT:8080}
 
+taskly:
+  jwt:
+    # O valor padrão serve só para desenvolvimento local; em produção defina JWT_SECRET.
+    secret: ${JWT_SECRET:taskly-segredo-de-desenvolvimento-nao-usar-em-producao}
+    access-token-validade: ${JWT_ACCESS_VALIDADE:15m}
+    refresh-token-validade: ${JWT_REFRESH_VALIDADE:7d}
+  admin:
+    # Se definidos, criam o primeiro ADMIN na subida (quando ainda não existe nenhum).
+    email: ${TASKLY_ADMIN_EMAIL:}
+    senha: ${TASKLY_ADMIN_SENHA:}
+
 management:
   endpoints:
     web:
