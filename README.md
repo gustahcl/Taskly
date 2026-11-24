@@ -2,8 +2,8 @@
 
 Plataforma de gestão de projetos e tarefas com quadro kanban e apontamento de horas.
 
-> **Status:** em desenvolvimento. Hoje o repositório contém a estrutura do monorepo,
-> o banco PostgreSQL via Docker Compose e a API em Spring Boot com a primeira migration.
+> **Status:** em desenvolvimento. Hoje a API já tem cadastro, login com JWT, refresh token
+> e controle de acesso por perfil. O front-end ainda não foi iniciado.
 
 ## Stack
 
@@ -48,7 +48,8 @@ cd backend
 
 ## Roadmap
 
-- [ ] Autenticação com JWT e perfis (ADMIN, GERENTE, MEMBRO)
+- [x] Autenticação com JWT e perfis (ADMIN, GERENTE, MEMBRO) no back-end
+- [ ] Telas de login e layout no Angular
 - [ ] Projetos e membros
 - [ ] Quadros e tarefas com kanban (drag-and-drop)
 - [ ] Apontamento de horas
