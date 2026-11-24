@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: taskly-backend
+
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:taskly}
+    username: ${DB_USER:taskly}
+    password: ${DB_PASSWORD:taskly}
+
+  jpa:
+    # O schema é responsabilidade do Flyway; o Hibernate só valida o mapeamento.
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+server:
+  port: ${SERVER_PORT:8080}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

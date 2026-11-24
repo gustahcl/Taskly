@@ -1,0 +1,17 @@
+# Variáveis de ambiente locais
+.env
+
+# IDEs
+.idea/
+.vscode/
+*.iml
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+
+# Build e dependências
+backend/target/
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
