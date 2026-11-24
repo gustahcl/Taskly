@@ -1,0 +1,59 @@
+<mat-sidenav-container class="container">
+  <mat-sidenav
+    #menu
+    class="menu"
+    [mode]="celular() ? 'over' : 'side'"
+    [opened]="!celular()"
+  >
+    <div class="marca"><mat-icon>view_kanban</mat-icon> Taskly</div>
+    <mat-nav-list>
+      @for (item of itens(); track item.rota) {
+        <a
+          mat-list-item
+          [routerLink]="item.rota"
+          routerLinkActive
+          #ativo="routerLinkActive"
+          [routerLinkActiveOptions]="{ exact: item.rota === '/' }"
+          [activated]="ativo.isActive"
+          (click)="celular() && menu.close()"
+        >
+          <mat-icon matListItemIcon>{{ item.icone }}</mat-icon>
+          <span matListItemTitle>{{ item.rotulo }}</span>
+        </a>
+      }
+    </mat-nav-list>
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+    <mat-toolbar class="cabecalho">
+      @if (celular()) {
+        <button mat-icon-button (click)="menu.toggle()" aria-label="Abrir menu">
+          <mat-icon>menu</mat-icon>
+        </button>
+      }
+      <span class="espaco"></span>
+      @if (usuario(); as u) {
+        <button mat-button [matMenuTriggerFor]="menuUsuario" class="usuario">
+          <span class="avatar" aria-hidden="true">{{ u.nome.charAt(0).toUpperCase() }}</span>
+          <span class="nome">{{ u.nome }}</span>
+          <mat-icon iconPositionEnd>expand_more</mat-icon>
+        </button>
+        <mat-menu #menuUsuario="matMenu" xPosition="before">
+          <div class="dados-usuario">
+            <strong>{{ u.nome }}</strong>
+            <span>{{ u.email }}</span>
+            <span class="perfil">{{ nomesPerfil[u.perfil] }}</span>
+          </div>
+          <button mat-menu-item (click)="sair()">
+            <mat-icon>logout</mat-icon>
+            <span>Sair</span>
+          </button>
+        </mat-menu>
+      }
+    </mat-toolbar>
+
+    <main class="conteudo">
+      <router-outlet />
+    </main>
+  </mat-sidenav-content>
+</mat-sidenav-container>
