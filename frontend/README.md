@@ -1,59 +1,41 @@
-# Frontend
+# Taskly: front-end
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.30.
+Aplicação web em Angular 21 com Angular Material.
 
-## Development server
+## Executar
 
-To start a local development server, run:
-
-```bash
-ng serve
-```
-
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+Com a API rodando em `http://localhost:8080`:
 
 ```bash
-ng generate component component-name
+npm install
+npm start          # http://localhost:4200
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+O servidor de desenvolvimento repassa as chamadas `/api` para a API (veja `proxy.conf.json`),
+então não é preciso configurar CORS em desenvolvimento.
+
+## Testes
 
 ```bash
-ng generate --help
+npm test -- --watch=false
 ```
 
-## Building
+Os testes unitários rodam com Vitest.
 
-To build the project run:
+## Estrutura
 
-```bash
-ng build
+```
+src/app/
+├── core/auth/        # AuthService, interceptor do token, guards de rota
+├── core/usuarios/    # Chamadas da API de usuários
+├── layout/shell/     # Layout da área logada: menu lateral e cabeçalho
+└── features/         # Telas: login, cadastro, início, usuários, acesso negado
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+## Autenticação
 
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+- O login guarda o access token e o refresh token no `localStorage`.
+- O `authInterceptor` envia o token em toda chamada a `/api`. Se a API responder 401, ele renova o token
+  uma vez e repete a requisição. Se a renovação falhar, a sessão é encerrada.
+- Guards: `autenticadoGuard` (precisa estar logado), `visitanteGuard` (login e cadastro) e
+  `perfilGuard(...perfis)` (restringe por perfil, por exemplo a tela de usuários é só para ADMIN).

@@ -2,8 +2,8 @@
 
 Plataforma de gestão de projetos e tarefas com quadro kanban e apontamento de horas.
 
-> **Status:** em desenvolvimento. Hoje a API já tem cadastro, login com JWT, refresh token
-> e controle de acesso por perfil. O front-end ainda não foi iniciado.
+> **Status:** em desenvolvimento. Já funcionam cadastro, login com JWT, refresh token, controle de
+> acesso por perfil e a gestão de usuários (ADMIN), na API e no front-end.
 
 ## Stack
 
@@ -27,7 +27,7 @@ Taskly/
 
 ## Como rodar
 
-Pré-requisitos: Java 17, Docker e Node.js 20+.
+Pré-requisitos: Java 17, Docker e Node.js 22.12+ ou 24+.
 
 ```bash
 # 1. Banco de dados
@@ -37,19 +37,27 @@ docker compose up -d
 # 2. API (http://localhost:8080)
 cd backend
 ./mvnw spring-boot:run
+
+# 3. Front-end (http://localhost:4200), em outro terminal
+cd frontend
+npm install
+npm start
 ```
 
-Os testes de integração usam Testcontainers e precisam do Docker ligado:
+Para ter um ADMIN logo na primeira subida, defina `TASKLY_ADMIN_EMAIL` e `TASKLY_ADMIN_SENHA`
+antes de iniciar a API. Os demais usuários se cadastram pela tela e entram como Membro.
+
+Testes:
 
 ```bash
-cd backend
-./mvnw test
+cd backend && ./mvnw test                     # usa Testcontainers: precisa do Docker ligado
+cd frontend && npm test -- --watch=false      # Vitest
 ```
 
 ## Roadmap
 
 - [x] Autenticação com JWT e perfis (ADMIN, GERENTE, MEMBRO) no back-end
-- [ ] Telas de login e layout no Angular
+- [x] Telas de login, cadastro e layout no Angular
 - [ ] Projetos e membros
 - [ ] Quadros e tarefas com kanban (drag-and-drop)
 - [ ] Apontamento de horas
@@ -59,5 +67,5 @@ cd backend
 
 ## Convenções
 
-- Branches: `main` (estável), `dev` (integração) e `feature/*`
+- Branches: `main` (estável), `develop` (integração) e `feature/*`
 - Commits no padrão [Conventional Commits](https://www.conventionalcommits.org/pt-br/)
