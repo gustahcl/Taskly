@@ -2,8 +2,8 @@
 
 Plataforma de gestão de projetos e tarefas com quadro kanban e apontamento de horas.
 
-> **Status:** em desenvolvimento. Já funcionam cadastro, login com JWT, refresh token, controle de
-> acesso por perfil e a gestão de usuários (ADMIN), na API e no front-end.
+> **Status:** MVP em desenvolvimento. Já funcionam cadastro e login com JWT, perfis de acesso,
+> projetos com equipe e papéis, e quadros kanban com tarefas, comentários e drag-and-drop.
 
 ## Stack
 
@@ -54,12 +54,22 @@ cd backend && ./mvnw test                     # usa Testcontainers: precisa do D
 cd frontend && npm test -- --watch=false      # Vitest
 ```
 
+## Funcionalidades
+
+- **Perfis de acesso:** ADMIN gerencia usuários e vê todos os projetos; GERENTE cria projetos;
+  MEMBRO participa dos projetos para os quais foi convidado.
+- **Projetos:** cliente, datas, status e equipe. Cada membro é gestor ou colaborador do projeto.
+- **Kanban:** quadros com colunas configuráveis, tarefas com responsável, prioridade e prazo,
+  comentários, drag-and-drop entre colunas e filtros.
+
+A lista completa de rotas da API está no [README do back-end](backend/README.md).
+
 ## Roadmap
 
 - [x] Autenticação com JWT e perfis (ADMIN, GERENTE, MEMBRO) no back-end
 - [x] Telas de login, cadastro e layout no Angular
-- [ ] Projetos e membros
-- [ ] Quadros e tarefas com kanban (drag-and-drop)
+- [x] Projetos e membros
+- [x] Quadros e tarefas com kanban (drag-and-drop)
 - [ ] Apontamento de horas
 - [ ] Dashboard
 - [ ] Testes, CI e deploy
