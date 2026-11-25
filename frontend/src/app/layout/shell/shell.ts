@@ -23,6 +23,7 @@ interface ItemMenu {
 
 const ITENS_MENU: ItemMenu[] = [
   { rota: '/', rotulo: 'Início', icone: 'home', perfis: [] },
+  { rota: '/projetos', rotulo: 'Projetos', icone: 'folder', perfis: [] },
   { rota: '/usuarios', rotulo: 'Usuários', icone: 'group', perfis: ['ADMIN'] },
 ];
 

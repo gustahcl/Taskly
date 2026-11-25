@@ -27,6 +27,10 @@ export const routes: Routes = [
         loadComponent: () => import('./features/inicio/inicio').then((m) => m.Inicio),
       },
       {
+        path: 'projetos',
+        loadChildren: () => import('./features/projetos/projetos.routes').then((m) => m.PROJETOS_ROUTES),
+      },
+      {
         path: 'usuarios',
         canActivate: [perfilGuard('ADMIN')],
         title: 'Usuários · Taskly',

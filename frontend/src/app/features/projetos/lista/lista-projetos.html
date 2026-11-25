@@ -1,0 +1,100 @@
+<header class="topo">
+  <div>
+    <h1>Projetos</h1>
+    <p class="subtitulo">Os projetos de que você participa.</p>
+  </div>
+  @if (podeCriar) {
+    <button mat-flat-button (click)="novoProjeto()">
+      <mat-icon>add</mat-icon>
+      Novo projeto
+    </button>
+  }
+</header>
+
+<div class="filtros">
+  <mat-form-field appearance="outline" subscriptSizing="dynamic" class="busca">
+    <mat-icon matPrefix>search</mat-icon>
+    <mat-label>Buscar por nome ou cliente</mat-label>
+    <input matInput [formControl]="busca" />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" subscriptSizing="dynamic">
+    <mat-label>Status</mat-label>
+    <mat-select [formControl]="status">
+      <mat-option [value]="null">Todos</mat-option>
+      @for (s of statusDisponiveis; track s) {
+        <mat-option [value]="s">{{ nomesStatus[s] }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+</div>
+
+@if (erro(); as mensagem) {
+  <p class="erro" role="alert">{{ mensagem }}</p>
+}
+
+<div class="tabela">
+  @if (carregando()) {
+    <mat-progress-bar mode="indeterminate" />
+  }
+  <table mat-table [dataSource]="projetos()" matSort matSortActive="nome" matSortDirection="asc"
+         (matSortChange)="ordenar($event)">
+    <ng-container matColumnDef="nome">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Nome</th>
+      <td mat-cell *matCellDef="let p">
+        <a class="link" [routerLink]="['/projetos', p.id]">{{ p.nome }}</a>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="cliente">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Cliente</th>
+      <td mat-cell *matCellDef="let p">{{ p.cliente ?? '—' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="status">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
+      <td mat-cell *matCellDef="let p">
+        <span class="status" [class]="'status status-' + p.status">{{ rotuloStatus(p) }}</span>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="dataFim">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Fim previsto</th>
+      <td mat-cell *matCellDef="let p">{{ p.dataFim ? (p.dataFim | date: 'dd/MM/yyyy') : '—' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="membros">
+      <th mat-header-cell *matHeaderCellDef>Equipe</th>
+      <td mat-cell *matCellDef="let p">{{ p.totalMembros }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="papel">
+      <th mat-header-cell *matHeaderCellDef>Seu papel</th>
+      <td mat-cell *matCellDef="let p">{{ rotuloPapel(p) }}</td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="colunas"></tr>
+    <tr mat-row *matRowDef="let linha; columns: colunas"></tr>
+    <tr class="mat-row" *matNoDataRow>
+      <td class="vazio" [attr.colspan]="colunas.length">
+        @if (!carregando()) {
+          @if (busca.value || status.value) {
+            Nenhum projeto encontrado com esses filtros.
+          } @else if (podeCriar) {
+            Nenhum projeto ainda. Crie o primeiro em "Novo projeto".
+          } @else {
+            Você ainda não participa de nenhum projeto.
+          }
+        }
+      </td>
+    </tr>
+  </table>
+  <mat-paginator
+    [length]="total()"
+    [pageIndex]="pagina()"
+    [pageSize]="tamanho()"
+    [pageSizeOptions]="[10, 25, 50]"
+    (page)="mudarPagina($event)"
+    aria-label="Paginação dos projetos"
+  />
+</div>

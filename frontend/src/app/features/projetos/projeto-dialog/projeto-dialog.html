@@ -1,0 +1,56 @@
+<h2 mat-dialog-title>{{ projeto ? 'Editar projeto' : 'Novo projeto' }}</h2>
+<form [formGroup]="form" (ngSubmit)="salvar()" novalidate>
+  <mat-dialog-content class="campos">
+    @if (erro(); as mensagem) {
+      <p class="erro" role="alert">{{ mensagem }}</p>
+    }
+
+    <mat-form-field appearance="outline" class="inteiro">
+      <mat-label>Nome</mat-label>
+      <input matInput formControlName="nome" maxlength="120" cdkFocusInitial />
+      @if (form.controls.nome.hasError('required')) {
+        <mat-error>Informe o nome do projeto</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Cliente</mat-label>
+      <input matInput formControlName="cliente" maxlength="120" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Status</mat-label>
+      <mat-select formControlName="status">
+        @for (s of status; track s) {
+          <mat-option [value]="s">{{ nomesStatus[s] }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Início</mat-label>
+      <input matInput type="date" formControlName="dataInicio" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Fim previsto</mat-label>
+      <input matInput type="date" formControlName="dataFim" />
+    </mat-form-field>
+
+    @if (form.hasError('periodo') && form.controls.dataFim.touched) {
+      <p class="erro-campo inteiro">A data de fim não pode ser anterior à de início.</p>
+    }
+
+    <mat-form-field appearance="outline" class="inteiro">
+      <mat-label>Descrição</mat-label>
+      <textarea matInput formControlName="descricao" rows="4" maxlength="2000"></textarea>
+    </mat-form-field>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button type="button" mat-dialog-close>Cancelar</button>
+    <button mat-flat-button type="submit" [disabled]="salvando()">
+      {{ projeto ? 'Salvar' : 'Criar projeto' }}
+    </button>
+  </mat-dialog-actions>
+</form>

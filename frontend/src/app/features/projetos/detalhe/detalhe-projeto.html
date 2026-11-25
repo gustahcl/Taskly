@@ -1,0 +1,126 @@
+<a mat-button routerLink="/projetos" class="voltar"><mat-icon>arrow_back</mat-icon> Projetos</a>
+
+@if (carregando() && !projeto()) {
+  <mat-progress-bar mode="indeterminate" />
+} @else if (erro(); as mensagem) {
+  <p class="erro" role="alert">{{ mensagem }}</p>
+} @else if (projeto(); as p) {
+  <header class="topo">
+    <div>
+      <div class="titulo">
+        <h1>{{ p.nome }}</h1>
+        <span [class]="'status status-' + p.status">{{ nomesStatus[p.status] }}</span>
+      </div>
+      <p class="meta">
+        @if (p.cliente) {
+          <span><mat-icon inline>business</mat-icon> {{ p.cliente }}</span>
+        }
+        @if (p.dataInicio || p.dataFim) {
+          <span>
+            <mat-icon inline>event</mat-icon>
+            {{ p.dataInicio ? (p.dataInicio | date: 'dd/MM/yyyy') : '?' }} –
+            {{ p.dataFim ? (p.dataFim | date: 'dd/MM/yyyy') : '?' }}
+          </span>
+        }
+        <span><mat-icon inline>badge</mat-icon> {{ p.meuPapel ? nomesPapel[p.meuPapel] : 'Administrador' }}</span>
+      </p>
+    </div>
+    @if (p.podeGerenciar) {
+      <div class="acoes">
+        <button mat-stroked-button (click)="editar()"><mat-icon>edit</mat-icon> Editar</button>
+        <button mat-icon-button (click)="excluir()" matTooltip="Excluir projeto" aria-label="Excluir projeto">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </div>
+    }
+  </header>
+
+  @if (p.descricao) {
+    <p class="descricao">{{ p.descricao }}</p>
+  }
+
+  <section>
+    <div class="secao-topo">
+      <h2>Quadros</h2>
+      @if (p.podeGerenciar) {
+        <button mat-button (click)="novoQuadro()"><mat-icon>add</mat-icon> Novo quadro</button>
+      }
+    </div>
+    <div class="quadros">
+      @for (q of quadros(); track q.id) {
+        <a class="quadro" [routerLink]="['/projetos', p.id, 'quadros', q.id]">
+          <mat-icon>view_kanban</mat-icon>
+          <span>{{ q.nome }}</span>
+        </a>
+      } @empty {
+        <p class="vazio">
+          Nenhum quadro ainda.
+          @if (p.podeGerenciar) {
+            Crie um para começar a organizar as tarefas.
+          }
+        </p>
+      }
+    </div>
+  </section>
+
+  <section>
+    <div class="secao-topo">
+      <h2>Equipe <span class="contador">{{ p.membros.length }}</span></h2>
+    </div>
+
+    @if (p.podeGerenciar) {
+      <div class="convite">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="pessoa">
+          <mat-label>Adicionar pessoa</mat-label>
+          <mat-icon matPrefix>person_add</mat-icon>
+          <input matInput [formControl]="convidado" [matAutocomplete]="auto" placeholder="Nome ou e-mail" />
+          <mat-autocomplete #auto="matAutocomplete" [displayWith]="nomeDoUsuario" (optionSelected)="escolher($event)">
+            @for (u of sugestoes(); track u.id) {
+              <mat-option [value]="u">
+                <span>{{ u.nome }}</span>
+                <small class="email">{{ u.email }}</small>
+              </mat-option>
+            }
+          </mat-autocomplete>
+        </mat-form-field>
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Papel</mat-label>
+          <mat-select [formControl]="papelConvite">
+            @for (papel of papeis; track papel) {
+              <mat-option [value]="papel">{{ nomesPapel[papel] }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <button mat-flat-button (click)="convidar()" [disabled]="!selecionado()">Adicionar</button>
+      </div>
+    }
+
+    <ul class="membros">
+      @for (m of p.membros; track m.usuarioId) {
+        <li>
+          <span class="avatar" aria-hidden="true">{{ m.nome.charAt(0).toUpperCase() }}</span>
+          <div class="pessoa-dados">
+            <strong>{{ m.nome }} @if (m.usuarioId === idLogado) { <small>(você)</small> }</strong>
+            <span class="email">{{ m.email }}</span>
+          </div>
+          @if (p.podeGerenciar) {
+            <mat-form-field appearance="outline" subscriptSizing="dynamic" class="papel">
+              <mat-select [value]="m.papel" (selectionChange)="alterarPapel(m, $event)"
+                          [attr.aria-label]="'Papel de ' + m.nome">
+                @for (papel of papeis; track papel) {
+                  <mat-option [value]="papel">{{ nomesPapel[papel] }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+            <button mat-icon-button (click)="removerMembro(m)" matTooltip="Remover do projeto"
+                    [attr.aria-label]="'Remover ' + m.nome">
+              <mat-icon>person_remove</mat-icon>
+            </button>
+          } @else {
+            <span class="papel-texto">{{ nomesPapel[m.papel] }}</span>
+          }
+        </li>
+      }
+    </ul>
+  </section>
+}

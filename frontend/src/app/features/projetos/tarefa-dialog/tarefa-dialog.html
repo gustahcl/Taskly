@@ -1,0 +1,112 @@
+<div class="cabecalho">
+  <h2 mat-dialog-title>Tarefa</h2>
+  <button mat-icon-button (click)="fechar()" aria-label="Fechar"><mat-icon>close</mat-icon></button>
+</div>
+
+<mat-dialog-content>
+  @if (erro(); as mensagem) {
+    <p class="erro" role="alert">{{ mensagem }}</p>
+  }
+
+  @if (tarefa(); as t) {
+    <p class="meta">
+      Em <strong>{{ t.colunaNome }}</strong> · criada por {{ t.criadoPor.nome }} em
+      {{ t.criadoEm | date: 'dd/MM/yyyy HH:mm' }}
+    </p>
+
+    <form [formGroup]="form" (ngSubmit)="salvar()" novalidate id="form-tarefa" class="campos">
+      <mat-form-field appearance="outline" class="inteiro">
+        <mat-label>Título</mat-label>
+        <input matInput formControlName="titulo" maxlength="200" />
+        @if (form.controls.titulo.invalid) {
+          <mat-error>Informe o título</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Responsável</mat-label>
+        <mat-select formControlName="responsavelId">
+          <mat-option [value]="null">Ninguém</mat-option>
+          @for (m of dados.membros; track m.usuarioId) {
+            <mat-option [value]="m.usuarioId">{{ m.nome }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Prioridade</mat-label>
+        <mat-select formControlName="prioridade">
+          @for (p of prioridades; track p) {
+            <mat-option [value]="p">{{ nomesPrioridade[p] }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Prazo</mat-label>
+        <input matInput type="date" formControlName="prazo" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="inteiro">
+        <mat-label>Descrição</mat-label>
+        <textarea matInput formControlName="descricao" rows="5" maxlength="5000"></textarea>
+      </mat-form-field>
+    </form>
+
+    <section class="comentarios">
+      <h3>Comentários</h3>
+      @for (c of comentarios(); track c.id) {
+        <div class="comentario">
+          <span class="avatar" aria-hidden="true">{{ c.autor.nome.charAt(0).toUpperCase() }}</span>
+          <div class="corpo">
+            <div class="autor">
+              <strong>{{ c.autor.nome }}</strong>
+              <span>{{ c.criadoEm | date: 'dd/MM/yyyy HH:mm' }}</span>
+              @if (c.podeExcluir) {
+                <button mat-icon-button class="apagar" (click)="excluirComentario(c)" matTooltip="Excluir comentário"
+                        aria-label="Excluir comentário">
+                  <mat-icon>delete_outline</mat-icon>
+                </button>
+              }
+            </div>
+            <p>{{ c.texto }}</p>
+          </div>
+        </div>
+      } @empty {
+        <p class="sem-comentarios">Nenhum comentário ainda.</p>
+      }
+
+      <div class="novo-comentario">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Escreva um comentário</mat-label>
+          <textarea matInput [formControl]="novoComentario" rows="2" maxlength="2000"
+                    (keydown.control.enter)="comentar()"></textarea>
+        </mat-form-field>
+        <button mat-stroked-button type="button" (click)="comentar()" [disabled]="novoComentario.invalid">
+          Comentar
+        </button>
+      </div>
+    </section>
+  } @else if (!erro()) {
+    <mat-progress-bar mode="indeterminate" />
+  }
+</mat-dialog-content>
+
+@if (tarefa(); as t) {
+  <mat-dialog-actions>
+    @if (t.podeExcluir) {
+      @if (confirmandoExclusao()) {
+        <span class="confirmar">Excluir a tarefa?</span>
+        <button mat-button type="button" (click)="confirmandoExclusao.set(false)">Não</button>
+        <button mat-button type="button" class="perigo" (click)="excluir()">Sim, excluir</button>
+      } @else {
+        <button mat-button type="button" class="perigo" (click)="confirmandoExclusao.set(true)">
+          <mat-icon>delete</mat-icon> Excluir
+        </button>
+      }
+    }
+    <span class="espaco"></span>
+    <button mat-button type="button" (click)="fechar()">Cancelar</button>
+    <button mat-flat-button type="submit" form="form-tarefa" [disabled]="salvando()">Salvar</button>
+  </mat-dialog-actions>
+}

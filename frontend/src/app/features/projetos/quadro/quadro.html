@@ -1,0 +1,162 @@
+@if (carregando()) {
+  <mat-progress-bar mode="indeterminate" />
+} @else if (erro(); as mensagem) {
+  <a mat-button [routerLink]="['/projetos', id()]" class="voltar"><mat-icon>arrow_back</mat-icon> Projeto</a>
+  <p class="erro" role="alert">{{ mensagem }}</p>
+} @else if (quadro(); as q) {
+  <header class="topo">
+    <div>
+      <a class="migalha" [routerLink]="['/projetos', q.projetoId]">
+        <mat-icon inline>arrow_back</mat-icon> {{ q.projetoNome }}
+      </a>
+      <h1>{{ q.nome }}</h1>
+    </div>
+    @if (q.podeGerenciar) {
+      <div class="acoes">
+        <button mat-stroked-button (click)="novaColuna()"><mat-icon>add</mat-icon> Coluna</button>
+        <button mat-icon-button [matMenuTriggerFor]="menuQuadro" aria-label="Opções do quadro">
+          <mat-icon>more_vert</mat-icon>
+        </button>
+        <mat-menu #menuQuadro="matMenu" xPosition="before">
+          <button mat-menu-item (click)="renomearQuadro()"><mat-icon>edit</mat-icon> Renomear quadro</button>
+          <button mat-menu-item (click)="excluirQuadro()"><mat-icon>delete</mat-icon> Excluir quadro</button>
+        </mat-menu>
+      </div>
+    }
+  </header>
+
+  <div class="filtros" role="search">
+    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="busca">
+      <mat-icon matPrefix>search</mat-icon>
+      <mat-label>Buscar tarefa</mat-label>
+      <input matInput [ngModel]="filtros().busca" (ngModelChange)="filtrar('busca', $event)" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Responsável</mat-label>
+      <mat-select [value]="filtros().responsavel" (valueChange)="filtrar('responsavel', $event)">
+        <mat-option [value]="null">Todos</mat-option>
+        <mat-option value="nenhum">Sem responsável</mat-option>
+        @for (m of q.membros; track m.usuarioId) {
+          <mat-option [value]="m.usuarioId">{{ m.nome }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Prioridade</mat-label>
+      <mat-select [value]="filtros().prioridade" (valueChange)="filtroPrioridade($event)">
+        <mat-option [value]="null">Todas</mat-option>
+        @for (p of prioridades; track p) {
+          <mat-option [value]="p">{{ nomesPrioridade[p] }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Prazo</mat-label>
+      <mat-select [value]="filtros().prazo" (valueChange)="filtroPrazo($event)">
+        <mat-option [value]="null">Qualquer</mat-option>
+        <mat-option value="atrasadas">Atrasadas</mat-option>
+        <mat-option value="semana">Próximos 7 dias</mat-option>
+        <mat-option value="sem-prazo">Sem prazo</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    @if (filtrando()) {
+      <span class="resumo-filtro">{{ totalVisivel() }} de {{ total() }} tarefas</span>
+      <button mat-button (click)="limparFiltros()"><mat-icon>filter_alt_off</mat-icon> Limpar</button>
+    }
+  </div>
+
+  <div class="quadro" cdkDropListGroup>
+    @for (c of colunas(); track c.coluna.id; let primeira = $first; let ultima = $last) {
+      <section class="coluna" [attr.aria-label]="c.coluna.nome">
+        <header class="coluna-topo">
+          <h2>{{ c.coluna.nome }}</h2>
+          <span class="contador">{{ c.coluna.tarefas.length }}</span>
+          @if (q.podeGerenciar) {
+            <button mat-icon-button class="menu-coluna" [matMenuTriggerFor]="menuColuna"
+                    [attr.aria-label]="'Opções da coluna ' + c.coluna.nome">
+              <mat-icon>more_horiz</mat-icon>
+            </button>
+            <mat-menu #menuColuna="matMenu">
+              <button mat-menu-item (click)="renomearColuna(c.coluna)"><mat-icon>edit</mat-icon> Renomear</button>
+              <button mat-menu-item (click)="moverColuna(c.coluna, -1)" [disabled]="primeira">
+                <mat-icon>chevron_left</mat-icon> Mover para a esquerda
+              </button>
+              <button mat-menu-item (click)="moverColuna(c.coluna, 1)" [disabled]="ultima">
+                <mat-icon>chevron_right</mat-icon> Mover para a direita
+              </button>
+              <button mat-menu-item (click)="excluirColuna(c.coluna)"><mat-icon>delete</mat-icon> Excluir</button>
+            </mat-menu>
+          }
+        </header>
+
+        <div class="cards" cdkDropList [cdkDropListData]="c" (cdkDropListDropped)="soltar($event)">
+          @for (t of c.tarefas; track t.id) {
+            <article
+              class="card"
+              cdkDrag
+              [cdkDragData]="t"
+              tabindex="0"
+              (click)="abrirTarefa(t)"
+              (keydown.enter)="abrirTarefa(t)"
+              [attr.aria-label]="t.titulo"
+            >
+              <p class="titulo">{{ t.titulo }}</p>
+              <div class="detalhes">
+                @if (t.prioridade !== 'BAIXA') {
+                  <span [class]="'prioridade prioridade-' + t.prioridade">{{ nomesPrioridade[t.prioridade] }}</span>
+                }
+                @if (t.prazo) {
+                  <span class="prazo" [class.atrasada]="atrasada(t)" [matTooltip]="atrasada(t) ? 'Atrasada' : 'Prazo'">
+                    <mat-icon inline>event</mat-icon> {{ t.prazo | date: 'dd/MM' }}
+                  </span>
+                }
+                @if (t.totalComentarios > 0) {
+                  <span class="comentarios" matTooltip="Comentários">
+                    <mat-icon inline>chat_bubble_outline</mat-icon> {{ t.totalComentarios }}
+                  </span>
+                }
+                <span class="espaco"></span>
+                @if (t.responsavel; as r) {
+                  <span class="avatar" [matTooltip]="r.nome">{{ r.nome.charAt(0).toUpperCase() }}</span>
+                }
+              </div>
+              <div class="placeholder" *cdkDragPlaceholder></div>
+            </article>
+          } @empty {
+            <p class="vazia">{{ filtrando() ? 'Nenhuma tarefa com esses filtros' : 'Arraste tarefas para cá' }}</p>
+          }
+        </div>
+
+        @if (criandoEm() === c.coluna.id) {
+          <div class="nova-tarefa">
+            <mat-form-field appearance="outline" subscriptSizing="dynamic">
+              <textarea
+                matInput
+                [(ngModel)]="novoTitulo"
+                placeholder="Título da tarefa"
+                aria-label="Título da nova tarefa"
+                maxlength="200"
+                rows="2"
+                (keydown.enter)="$event.preventDefault(); criarTarefa(c.coluna)"
+                (keydown.escape)="criandoEm.set(null)"
+                autofocus
+              ></textarea>
+            </mat-form-field>
+            <div class="nova-acoes">
+              <button mat-flat-button (click)="criarTarefa(c.coluna)">Adicionar</button>
+              <button mat-icon-button (click)="criandoEm.set(null)" aria-label="Cancelar"><mat-icon>close</mat-icon></button>
+            </div>
+          </div>
+        } @else {
+          <button mat-button class="adicionar" (click)="abrirNovaTarefa(c.coluna)">
+            <mat-icon>add</mat-icon> Adicionar tarefa
+          </button>
+        }
+      </section>
+    }
+  </div>
+}

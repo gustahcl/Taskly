@@ -1,0 +1,59 @@
+.topo {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+
+  h1 {
+    margin: 0 0 4px;
+    font: var(--mat-sys-headline-medium);
+  }
+}
+
+.subtitulo {
+  margin: 0;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.filtros {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+
+  .busca {
+    flex: 1 1 280px;
+    max-width: 420px;
+  }
+}
+
+.tabela {
+  overflow-x: auto;
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 12px;
+}
+
+.link {
+  color: var(--mat-sys-primary);
+  font-weight: 500;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.vazio {
+  padding: 32px 16px;
+  text-align: center;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.erro {
+  padding: 12px;
+  border-radius: 8px;
+  background: var(--mat-sys-error-container);
+  color: var(--mat-sys-on-error-container);
+}

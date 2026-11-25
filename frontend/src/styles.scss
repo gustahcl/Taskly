@@ -37,3 +37,59 @@ body {
   height: 100%;
 }
 /* You can add global styles to this file, and also import other style files */
+
+// Etiquetas de status do projeto e de prioridade da tarefa, usadas em várias telas.
+.status,
+.prioridade {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font: var(--mat-sys-label-medium);
+  white-space: nowrap;
+  background: var(--mat-sys-surface-container-high);
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.status-EM_ANDAMENTO {
+  background: #dbeafe;
+  color: #1e40af;
+}
+.status-PAUSADO {
+  background: #fef3c7;
+  color: #92400e;
+}
+.status-CONCLUIDO {
+  background: #dcfce7;
+  color: #166534;
+}
+.status-CANCELADO {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.prioridade-MEDIA {
+  background: #e0f2fe;
+  color: #075985;
+}
+.prioridade-ALTA {
+  background: #ffedd5;
+  color: #9a3412;
+}
+.prioridade-URGENTE {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+// Avatar com a inicial do nome.
+.avatar {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--mat-sys-primary-container);
+  color: var(--mat-sys-on-primary-container);
+  font: var(--mat-sys-label-large);
+}

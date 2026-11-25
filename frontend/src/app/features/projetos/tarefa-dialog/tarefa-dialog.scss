@@ -1,0 +1,107 @@
+.cabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-right: 12px;
+}
+
+.meta {
+  margin: 0 0 16px;
+  color: var(--mat-sys-on-surface-variant);
+  font: var(--mat-sys-body-small);
+}
+
+.campos {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  column-gap: 12px;
+}
+
+.inteiro {
+  grid-column: 1 / -1;
+}
+
+.comentarios {
+  h3 {
+    margin: 0 0 12px;
+    font: var(--mat-sys-title-medium);
+  }
+}
+
+.comentario {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+
+  .corpo {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .autor {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 28px;
+
+    span {
+      color: var(--mat-sys-on-surface-variant);
+      font: var(--mat-sys-body-small);
+    }
+  }
+
+  .apagar {
+    margin-left: auto;
+    transform: scale(0.8);
+  }
+
+  p {
+    margin: 2px 0 0;
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+  }
+}
+
+.sem-comentarios {
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.novo-comentario {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+
+  mat-form-field {
+    flex: 1;
+  }
+
+  button {
+    margin-top: 8px;
+  }
+}
+
+.espaco {
+  flex: 1;
+}
+
+.confirmar {
+  margin-left: 8px;
+  font: var(--mat-sys-body-medium);
+}
+
+.perigo {
+  --mat-button-text-label-text-color: var(--mat-sys-error);
+}
+
+.erro {
+  padding: 12px;
+  border-radius: 8px;
+  background: var(--mat-sys-error-container);
+  color: var(--mat-sys-on-error-container);
+}
+
+@media (max-width: 599px) {
+  .campos {
+    grid-template-columns: 1fr;
+  }
+}
