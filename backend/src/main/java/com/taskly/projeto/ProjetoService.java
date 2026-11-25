@@ -72,7 +72,7 @@ public class ProjetoService {
 	public Projeto buscarVisivel(Long id, UsuarioLogado usuario) {
 		Projeto projeto = projetoRepository.findById(id)
 			.orElseThrow(() -> new RecursoNaoEncontradoException("Projeto não encontrado"));
-		if (!usuario.admin() && projeto.membro(usuario.id()).isEmpty()) {
+		if (!podeVer(projeto, usuario)) {
 			throw new RecursoNaoEncontradoException("Projeto não encontrado");
 		}
 		projeto.getMembros().forEach(m -> m.getUsuario().getNome());
@@ -87,6 +87,10 @@ public class ProjetoService {
 			throw new AcessoNegadoException("Só o gestor do projeto pode fazer isso");
 		}
 		return projeto;
+	}
+
+	public boolean podeVer(Projeto projeto, UsuarioLogado usuario) {
+		return usuario.admin() || projeto.membro(usuario.id()).isPresent();
 	}
 
 	public boolean podeGerenciar(Projeto projeto, UsuarioLogado usuario) {
