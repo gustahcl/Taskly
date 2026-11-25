@@ -1,8 +1,11 @@
 package com.taskly.usuario;
 
+import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
@@ -11,5 +14,12 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 	boolean existsByEmailIgnoreCase(String email);
 
 	boolean existsByPerfil(Perfil perfil);
+
+	/** Usuários ativos cujo nome ou e-mail contém o termo (já em minúsculas). */
+	@Query("""
+			select u from Usuario u
+			where u.ativo = true and (lower(u.nome) like concat('%', :termo, '%') or lower(u.email) like concat('%', :termo, '%'))
+			order by u.nome""")
+	List<Usuario> buscarAtivos(String termo, Pageable pageable);
 
 }
