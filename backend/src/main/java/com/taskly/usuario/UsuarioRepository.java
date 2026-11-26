@@ -5,7 +5,10 @@ import java.util.Optional;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
+
+import jakarta.persistence.LockModeType;
 
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
@@ -21,5 +24,10 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 			where u.ativo = true and (lower(u.nome) like concat('%', :termo, '%') or lower(u.email) like concat('%', :termo, '%'))
 			order by u.nome""")
 	List<Usuario> buscarAtivos(String termo, Pageable pageable);
+
+	/** Trava o usuário até o fim da transação (ex.: para conferir o limite diário de horas sem corrida). */
+	@Lock(LockModeType.PESSIMISTIC_WRITE)
+	@Query("select u from Usuario u where u.id = :id")
+	Optional<Usuario> travar(Long id);
 
 }

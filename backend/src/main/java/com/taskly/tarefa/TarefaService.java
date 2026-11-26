@@ -20,6 +20,7 @@ import com.taskly.quadro.Quadro;
 import com.taskly.quadro.QuadroRepository;
 import com.taskly.quadro.QuadroService;
 import com.taskly.tarefa.TarefaDtos.ComentarioResponse;
+import com.taskly.tarefa.TarefaDtos.TarefaOpcao;
 import com.taskly.tarefa.TarefaDtos.TarefaRequest;
 import com.taskly.tarefa.TarefaDtos.TarefaResponse;
 import com.taskly.tarefa.TarefaDtos.TarefaResumo;
@@ -62,6 +63,13 @@ public class TarefaService {
 		aplicar(tarefa, projeto, request);
 		tarefaRepository.save(tarefa);
 		return TarefaResponse.de(tarefa, true);
+	}
+
+	/** Todas as tarefas do projeto, de todos os quadros, em formato de lista. */
+	@Transactional(readOnly = true)
+	public List<TarefaOpcao> doProjeto(Long projetoId, UsuarioLogado usuario) {
+		projetoService.buscarVisivel(projetoId, usuario);
+		return tarefaRepository.doProjeto(projetoId).stream().map(TarefaOpcao::de).toList();
 	}
 
 	@Transactional(readOnly = true)
@@ -147,8 +155,9 @@ public class TarefaService {
 		comentarioRepository.delete(comentario);
 	}
 
-	/** Tarefa de um projeto que o usuário enxerga; caso contrário, 404. */
-	private Tarefa buscarVisivel(Long tarefaId, UsuarioLogado usuario) {
+	/** Tarefa de um projeto que o usuário enxerga (com coluna, quadro e projeto carregados); caso contrário, 404. */
+	@Transactional(readOnly = true)
+	public Tarefa buscarVisivel(Long tarefaId, UsuarioLogado usuario) {
 		Tarefa tarefa = tarefaRepository.buscarCompleta(tarefaId)
 			.orElseThrow(() -> new RecursoNaoEncontradoException("Tarefa não encontrada"));
 		if (!projetoService.podeVer(projetoDa(tarefa), usuario)) {

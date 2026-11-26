@@ -30,6 +30,11 @@ taskly:
     # Se definidos, criam o primeiro ADMIN na subida (quando ainda não existe nenhum).
     email: ${TASKLY_ADMIN_EMAIL:}
     senha: ${TASKLY_ADMIN_SENHA:}
+  horas:
+    # Máximo que uma pessoa pode apontar num mesmo dia, somando todas as tarefas.
+    limite-diario: ${TASKLY_HORAS_LIMITE_DIARIO:12h}
+    # Fuso usado para saber que dia é "hoje" (não se apontam horas no futuro).
+    fuso: ${TASKLY_FUSO:America/Sao_Paulo}
 
 management:
   endpoints:

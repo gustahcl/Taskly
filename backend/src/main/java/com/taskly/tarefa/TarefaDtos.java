@@ -44,6 +44,16 @@ public final class TarefaDtos {
 
 	}
 
+	/** Item de lista para escolher uma tarefa do projeto (ex.: ao apontar horas). */
+	public record TarefaOpcao(Long id, String titulo, Long quadroId, String quadroNome, String colunaNome) {
+
+		static TarefaOpcao de(Tarefa tarefa) {
+			return new TarefaOpcao(tarefa.getId(), tarefa.getTitulo(), tarefa.getColuna().getQuadro().getId(),
+					tarefa.getColuna().getQuadro().getNome(), tarefa.getColuna().getNome());
+		}
+
+	}
+
 	public record TarefaResponse(Long id, Long quadroId, Long colunaId, String colunaNome, String titulo,
 			String descricao, Prioridade prioridade, LocalDate prazo, int posicao, UsuarioResumo responsavel,
 			UsuarioResumo criadoPor, Instant criadoEm, Instant atualizadoEm, boolean podeExcluir) {

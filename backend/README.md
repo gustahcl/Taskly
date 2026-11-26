@@ -20,6 +20,8 @@ Suba o banco a partir da raiz (`docker compose up -d`) e rode:
 | `JWT_ACCESS_VALIDADE` | `15m` | Validade do access token |
 | `JWT_REFRESH_VALIDADE` | `7d` | Validade do refresh token |
 | `TASKLY_ADMIN_EMAIL`, `TASKLY_ADMIN_SENHA` | vazio | Se definidos, criam o primeiro ADMIN na subida |
+| `TASKLY_HORAS_LIMITE_DIARIO` | `12h` | Máximo de horas que uma pessoa aponta num mesmo dia |
+| `TASKLY_FUSO` | `America/Sao_Paulo` | Fuso usado para saber que dia é "hoje" no apontamento |
 
 ## Autenticação
 
@@ -36,7 +38,6 @@ já usado revoga todas as sessões do usuário. No banco fica só o hash SHA-256
 | `GET` | `/api/usuarios/me` | autenticado | Dados do usuário logado |
 | `GET` | `/api/usuarios` | ADMIN | Lista os usuários |
 | `PATCH` | `/api/usuarios/{id}/perfil` | ADMIN | Altera o perfil (ADMIN, GERENTE, MEMBRO) |
-
 | `GET` | `/api/usuarios/busca?termo=` | autenticado | Até 10 usuários ativos por nome ou e-mail (para convidar a projetos) |
 
 Envie o access token no header `Authorization: Bearer <token>`.
@@ -76,6 +77,7 @@ posições contínuas a cada movimento.
 | `PUT` | `/api/colunas/{id}` | gestor | Renomeia a coluna |
 | `PATCH` | `/api/colunas/{id}/mover` | gestor | Muda a coluna de posição (`posicao`) |
 | `DELETE` | `/api/colunas/{id}` | gestor | Exclui a coluna (precisa estar vazia) |
+| `GET` | `/api/projetos/{id}/tarefas` | membro | Lista simples das tarefas de todos os quadros do projeto |
 | `POST` | `/api/colunas/{id}/tarefas` | membro | Cria a tarefa no fim da coluna |
 | `GET` / `PUT` | `/api/tarefas/{id}` | membro | Detalhes ou edição (título, descrição, responsável, prioridade, prazo) |
 | `DELETE` | `/api/tarefas/{id}` | autor ou gestor | Exclui a tarefa |
@@ -84,6 +86,22 @@ posições contínuas a cada movimento.
 | `DELETE` | `/api/comentarios/{id}` | autor ou ADMIN | Exclui o comentário |
 
 O responsável por uma tarefa precisa ser membro do projeto. Prioridades: `BAIXA`, `MEDIA`, `ALTA` e `URGENTE`.
+
+## Apontamento de horas
+
+Cada pessoa aponta as próprias horas nas tarefas dos projetos de que participa. A duração vai em
+`minutos` (90 = 1h30). Não se apontam horas em datas futuras, e a soma de um dia, considerando todas as
+tarefas, não passa do limite diário (12h por padrão). Só quem apontou pode editar ou excluir.
+
+| Método | Rota | Acesso | Descrição |
+|---|---|---|---|
+| `GET` | `/api/tarefas/{id}/apontamentos` | membro | Horas da tarefa e o total |
+| `POST` | `/api/tarefas/{id}/apontamentos` | membro | Aponta horas (`data`, `minutos`, `descricao`) |
+| `PUT` / `DELETE` | `/api/apontamentos/{id}` | autor | Edita ou exclui o apontamento |
+| `GET` | `/api/apontamentos/meus?inicio=&fim=` | autenticado | Suas horas no período, com o total de cada dia. Sem datas: semana atual |
+| `GET` | `/api/apontamentos/consolidado?inicio=&fim=&projetoId=` | gestor | Horas por pessoa e por projeto nos projetos que você gere (ADMIN: todos) |
+
+Os períodos têm no máximo 366 dias. Excluir uma tarefa exclui também as horas apontadas nela.
 
 ## Erros
 
@@ -96,7 +114,7 @@ Todos os erros seguem o formato Problem Details (RFC 9457), com `status` e `deta
 | 403 | Sem permissão para a operação |
 | 404 | Recurso inexistente ou que o usuário não pode ver |
 | 409 | Conflito (e-mail já cadastrado, membro repetido) |
-| 422 | Regra de negócio violada (ex.: remover o único gestor, excluir coluna com tarefas) |
+| 422 | Regra de negócio violada (ex.: remover o único gestor, excluir coluna com tarefas, passar do limite diário de horas) |
 
 ## Testes
 

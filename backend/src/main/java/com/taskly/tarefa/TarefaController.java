@@ -20,6 +20,7 @@ import com.taskly.common.UsuarioLogado;
 import com.taskly.tarefa.TarefaDtos.ComentarioRequest;
 import com.taskly.tarefa.TarefaDtos.ComentarioResponse;
 import com.taskly.tarefa.TarefaDtos.MoverTarefaRequest;
+import com.taskly.tarefa.TarefaDtos.TarefaOpcao;
 import com.taskly.tarefa.TarefaDtos.TarefaRequest;
 import com.taskly.tarefa.TarefaDtos.TarefaResponse;
 import com.taskly.tarefa.TarefaDtos.TarefaResumo;
@@ -41,6 +42,11 @@ public class TarefaController {
 			@Valid @RequestBody TarefaRequest request) {
 		TarefaResponse tarefa = tarefaService.criar(colunaId, UsuarioLogado.de(jwt), request);
 		return ResponseEntity.created(URI.create("/api/tarefas/" + tarefa.id())).body(tarefa);
+	}
+
+	@GetMapping("/projetos/{projetoId}/tarefas")
+	public List<TarefaOpcao> doProjeto(@AuthenticationPrincipal Jwt jwt, @PathVariable Long projetoId) {
+		return tarefaService.doProjeto(projetoId, UsuarioLogado.de(jwt));
 	}
 
 	@GetMapping("/tarefas/{id}")

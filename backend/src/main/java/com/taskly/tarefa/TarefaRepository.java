@@ -27,4 +27,11 @@ public interface TarefaRepository extends JpaRepository<Tarefa, Long> {
 			where t.id = :id""")
 	Optional<Tarefa> buscarCompleta(Long id);
 
+	/** Tarefas de todos os quadros do projeto, na ordem de quadro, coluna e posição. */
+	@Query("""
+			select t from Tarefa t join fetch t.coluna c join fetch c.quadro q
+			where q.projeto.id = :projetoId
+			order by q.id, c.posicao, t.posicao""")
+	List<Tarefa> doProjeto(Long projetoId);
+
 }
