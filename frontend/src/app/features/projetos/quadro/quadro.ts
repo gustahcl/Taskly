@@ -174,7 +174,7 @@ export class Quadro implements OnInit {
     const quadro = this.quadro()!;
     this.dialog
       .open<TarefaDialog, DadosTarefaDialog, ResultadoTarefaDialog>(TarefaDialog, {
-        data: { tarefaId: tarefa.id, membros: quadro.membros },
+        data: { tarefaId: tarefa.id, membros: quadro.membros, projetoNome: quadro.projetoNome },
         width: '720px',
         maxWidth: '95vw',
         autoFocus: 'dialog',

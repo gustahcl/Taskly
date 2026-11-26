@@ -1,0 +1,101 @@
+<header class="topo">
+  <div>
+    <h1>Minhas horas</h1>
+    <p class="subtitulo">
+      Semana de {{ inicio() | date: 'dd/MM' }} a {{ fim() | date: 'dd/MM/yyyy' }}
+      @if (semana(); as s) {
+        · <strong>{{ s.totalMinutos | duracao }}</strong> no total
+      }
+    </p>
+  </div>
+  <div class="acoes">
+    <button mat-icon-button (click)="mudarSemana(-1)" matTooltip="Semana anterior" aria-label="Semana anterior">
+      <mat-icon>chevron_left</mat-icon>
+    </button>
+    <button mat-stroked-button (click)="irParaHoje()" [disabled]="semanaAtual()">Esta semana</button>
+    <button mat-icon-button (click)="mudarSemana(1)" matTooltip="Próxima semana" aria-label="Próxima semana">
+      <mat-icon>chevron_right</mat-icon>
+    </button>
+    <button mat-flat-button (click)="apontar()">
+      <mat-icon>more_time</mat-icon>
+      Apontar horas
+    </button>
+  </div>
+</header>
+
+@if (erro(); as mensagem) {
+  <p class="erro" role="alert">{{ mensagem }}</p>
+}
+@if (carregando()) {
+  <mat-progress-bar mode="indeterminate" />
+}
+
+@if (semana(); as s) {
+  <section class="dias" aria-label="Total por dia">
+    @for (d of dias(); track d.data) {
+      <div class="dia" [class.hoje]="d.hoje" [class.futuro]="d.futuro">
+        <div class="rotulo">
+          <span class="nome">{{ d.nome }}</span>
+          <span class="data">{{ d.data | date: 'dd/MM' }}</span>
+        </div>
+        <span class="total" [class.zerado]="d.minutos === 0">{{ d.minutos | duracao }}</span>
+        <div class="barra" aria-hidden="true">
+          <span [style.width.%]="d.proporcao * 100" [class.cheia]="d.proporcao >= 1"></span>
+        </div>
+        @if (!d.futuro) {
+          <button mat-icon-button class="mais" (click)="apontar(d.data)" matTooltip="Apontar neste dia"
+                  [attr.aria-label]="'Apontar horas em ' + (d.data | date: 'dd/MM')">
+            <mat-icon>add</mat-icon>
+          </button>
+        }
+      </div>
+    }
+  </section>
+  <p class="limite">Limite de {{ s.limiteDiarioMinutos | duracao }} por dia.</p>
+
+  @if (porProjeto().length > 0) {
+    <section class="projetos" aria-label="Total por projeto">
+      @for (p of porProjeto(); track p.nome) {
+        <span class="chip">{{ p.nome }} <strong>{{ p.minutos | duracao }}</strong></span>
+      }
+    </section>
+  }
+
+  <section class="lista">
+    @for (d of dias(); track d.data) {
+      @if (d.apontamentos.length > 0) {
+        <h2>
+          {{ d.nome }}, {{ d.data | date: 'dd/MM' }}
+          <span>{{ d.minutos | duracao }}</span>
+        </h2>
+        @for (a of d.apontamentos; track a.id) {
+          <article class="apontamento">
+            <span class="duracao">{{ a.minutos | duracao }}</span>
+            <div class="corpo">
+              <a class="tarefa" [routerLink]="['/projetos', a.tarefa.projetoId, 'quadros', a.tarefa.quadroId]">
+                {{ a.tarefa.titulo }}
+              </a>
+              <span class="projeto">{{ a.tarefa.projetoNome }}</span>
+              @if (a.descricao) {
+                <p>{{ a.descricao }}</p>
+              }
+            </div>
+            <button mat-icon-button (click)="editar(a)" matTooltip="Editar" aria-label="Editar apontamento">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button (click)="excluir(a)" matTooltip="Excluir" aria-label="Excluir apontamento">
+              <mat-icon>delete_outline</mat-icon>
+            </button>
+          </article>
+        }
+      }
+    }
+    @if (s.apontamentos.length === 0) {
+      <div class="vazio">
+        <mat-icon>schedule</mat-icon>
+        <p>Nenhuma hora apontada nesta semana.</p>
+        <button mat-stroked-button (click)="apontar()">Apontar horas</button>
+      </div>
+    }
+  </section>
+}

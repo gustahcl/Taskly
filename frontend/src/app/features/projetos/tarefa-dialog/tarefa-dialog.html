@@ -53,6 +53,48 @@
       </mat-form-field>
     </form>
 
+    <section class="horas">
+      <div class="titulo-secao">
+        <h3>
+          Horas
+          @if (horas(); as h) {
+            <span class="total">{{ h.totalMinutos | duracao }}</span>
+          }
+        </h3>
+        <button mat-stroked-button type="button" (click)="apontarHoras()">
+          <mat-icon>more_time</mat-icon> Apontar horas
+        </button>
+      </div>
+      @for (a of horas()?.apontamentos ?? []; track a.id) {
+        <div class="apontamento">
+          <span class="duracao">{{ a.minutos | duracao }}</span>
+          <div class="corpo">
+            <div class="autor">
+              <strong>{{ a.usuario.nome }}</strong>
+              <span>{{ a.data | date: 'dd/MM/yyyy' }}</span>
+              @if (a.podeEditar) {
+                <span class="botoes">
+                  <button mat-icon-button type="button" (click)="apontarHoras(a)" matTooltip="Editar horas"
+                          aria-label="Editar horas">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  <button mat-icon-button type="button" (click)="excluirHoras(a)" matTooltip="Excluir horas"
+                          aria-label="Excluir horas">
+                    <mat-icon>delete_outline</mat-icon>
+                  </button>
+                </span>
+              }
+            </div>
+            @if (a.descricao) {
+              <p>{{ a.descricao }}</p>
+            }
+          </div>
+        </div>
+      } @empty {
+        <p class="sem-comentarios">Nenhuma hora apontada.</p>
+      }
+    </section>
+
     <section class="comentarios">
       <h3>Comentários</h3>
       @for (c of comentarios(); track c.id) {

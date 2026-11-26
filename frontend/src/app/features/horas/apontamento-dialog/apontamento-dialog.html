@@ -1,0 +1,75 @@
+<h2 mat-dialog-title>{{ edicao ? 'Editar horas' : 'Apontar horas' }}</h2>
+
+<mat-dialog-content>
+  @if (erro(); as mensagem) {
+    <p class="erro" role="alert">{{ mensagem }}</p>
+  }
+
+  <form [formGroup]="form" (ngSubmit)="salvar()" novalidate id="form-apontamento" class="campos">
+    @if (tarefaFixa; as t) {
+      <p class="fixa">
+        <strong>{{ t.titulo }}</strong> · {{ t.projetoNome }}
+      </p>
+    } @else {
+      <mat-form-field appearance="outline">
+        <mat-label>Projeto</mat-label>
+        <mat-select [formControl]="projetoId">
+          @for (p of projetos(); track p.id) {
+            <mat-option [value]="p.id">{{ p.nome }}</mat-option>
+          } @empty {
+            <mat-option disabled>Você não participa de nenhum projeto</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Tarefa</mat-label>
+        <mat-select formControlName="tarefaId">
+          @for (t of tarefas(); track t.id) {
+            <mat-option [value]="t.id">
+              {{ t.titulo }} <small>· {{ t.quadroNome }} / {{ t.colunaNome }}</small>
+            </mat-option>
+          } @empty {
+            <mat-option disabled>
+              {{ !projetoId.value ? 'Escolha o projeto primeiro' : carregandoTarefas() ? 'Carregando…' : 'Nenhuma tarefa neste projeto' }}
+            </mat-option>
+          }
+        </mat-select>
+        @if (form.controls.tarefaId.invalid) {
+          <mat-error>Escolha a tarefa</mat-error>
+        }
+      </mat-form-field>
+    }
+
+    <mat-form-field appearance="outline">
+      <mat-label>Data</mat-label>
+      <input matInput type="date" formControlName="data" [max]="hoje" />
+      @if (form.controls.data.invalid) {
+        <mat-error>Informe a data</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Duração</mat-label>
+      <input matInput formControlName="duracao" placeholder="1h30" autocomplete="off" cdkFocusInitial />
+      <mat-hint>Ex.: 1h30, 45m, 1:30 ou 1,5</mat-hint>
+      @if (form.controls.duracao.hasError('required')) {
+        <mat-error>Informe a duração</mat-error>
+      } @else if (form.controls.duracao.hasError('maximo')) {
+        <mat-error>No máximo 24h</mat-error>
+      } @else if (form.controls.duracao.invalid) {
+        <mat-error>Use algo como 1h30, 45m ou 1:30</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="inteiro">
+      <mat-label>O que foi feito</mat-label>
+      <textarea matInput formControlName="descricao" rows="3" maxlength="500"></textarea>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button type="button" mat-dialog-close>Cancelar</button>
+  <button mat-flat-button type="submit" form="form-apontamento" [disabled]="salvando()">Salvar</button>
+</mat-dialog-actions>

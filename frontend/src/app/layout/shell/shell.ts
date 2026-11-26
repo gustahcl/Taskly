@@ -19,11 +19,15 @@ interface ItemMenu {
   icone: string;
   /** Perfis que veem o item; vazio = todos. */
   perfis: Perfil[];
+  /** Destaca o item só na rota exata (quando outro item fica "embaixo" dele). */
+  exato?: boolean;
 }
 
 const ITENS_MENU: ItemMenu[] = [
-  { rota: '/', rotulo: 'Início', icone: 'home', perfis: [] },
+  { rota: '/', rotulo: 'Início', icone: 'home', perfis: [], exato: true },
   { rota: '/projetos', rotulo: 'Projetos', icone: 'folder', perfis: [] },
+  { rota: '/horas', rotulo: 'Minhas horas', icone: 'schedule', perfis: [], exato: true },
+  { rota: '/horas/consolidado', rotulo: 'Consolidado', icone: 'query_stats', perfis: ['ADMIN', 'GERENTE'] },
   { rota: '/usuarios', rotulo: 'Usuários', icone: 'group', perfis: ['ADMIN'] },
 ];
 

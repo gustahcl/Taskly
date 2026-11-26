@@ -1,0 +1,120 @@
+<header class="topo">
+  <h1>Consolidado de horas</h1>
+  <p class="subtitulo">Horas apontadas por pessoa e por projeto nos projetos que você gere.</p>
+</header>
+
+<form class="filtros" [formGroup]="filtro">
+  <mat-button-toggle-group [formControl]="atalho" aria-label="Período" hideSingleSelectionIndicator>
+    <mat-button-toggle value="semana">Esta semana</mat-button-toggle>
+    <mat-button-toggle value="semana-passada">Semana passada</mat-button-toggle>
+    <mat-button-toggle value="mes">Este mês</mat-button-toggle>
+    <mat-button-toggle value="mes-passado">Mês passado</mat-button-toggle>
+  </mat-button-toggle-group>
+
+  <mat-form-field appearance="outline" subscriptSizing="dynamic">
+    <mat-label>De</mat-label>
+    <input matInput type="date" formControlName="inicio" />
+  </mat-form-field>
+  <mat-form-field appearance="outline" subscriptSizing="dynamic">
+    <mat-label>Até</mat-label>
+    <input matInput type="date" formControlName="fim" />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" subscriptSizing="dynamic" class="projeto">
+    <mat-label>Projeto</mat-label>
+    <mat-select formControlName="projetoId">
+      <mat-option [value]="null">Todos</mat-option>
+      @for (p of projetos(); track p.id) {
+        <mat-option [value]="p.id">{{ p.nome }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+</form>
+
+@if (erro(); as mensagem) {
+  <p class="erro" role="alert">{{ mensagem }}</p>
+}
+@if (carregando()) {
+  <mat-progress-bar mode="indeterminate" />
+}
+
+@if (dados(); as d) {
+  <section class="numeros">
+    <div class="numero">
+      <span class="valor">{{ d.totalMinutos | duracao }}</span>
+      <span class="legenda">apontadas de {{ d.inicio | date: 'dd/MM' }} a {{ d.fim | date: 'dd/MM/yyyy' }}</span>
+    </div>
+    <div class="numero">
+      <span class="valor">{{ d.porPessoa.length }}</span>
+      <span class="legenda">{{ d.porPessoa.length === 1 ? 'pessoa' : 'pessoas' }}</span>
+    </div>
+    <div class="numero">
+      <span class="valor">{{ d.porProjeto.length }}</span>
+      <span class="legenda">{{ d.porProjeto.length === 1 ? 'projeto' : 'projetos' }}</span>
+    </div>
+  </section>
+
+  @if (d.linhas.length === 0) {
+    <div class="vazio">
+      <mat-icon>query_stats</mat-icon>
+      <p>Nenhuma hora apontada neste período.</p>
+    </div>
+  } @else {
+    <div class="paineis">
+      <section class="painel">
+        <h2>Por pessoa</h2>
+        @for (p of d.porPessoa; track p.usuarioId) {
+          <div class="barra-linha">
+            <span class="nome">{{ p.nome }}</span>
+            <div class="barra" aria-hidden="true">
+              <span [style.width.%]="(p.minutos / maiorPorPessoa()) * 100"></span>
+            </div>
+            <span class="horas">{{ p.minutos | duracao }}</span>
+          </div>
+        }
+      </section>
+
+      <section class="painel">
+        <h2>Por projeto</h2>
+        @for (p of d.porProjeto; track p.projetoId) {
+          <div class="barra-linha">
+            <span class="nome">
+              {{ p.nome }}
+              @if (p.cliente) {
+                <small>{{ p.cliente }}</small>
+              }
+            </span>
+            <div class="barra" aria-hidden="true">
+              <span [style.width.%]="(p.minutos / maiorPorProjeto()) * 100"></span>
+            </div>
+            <span class="horas">{{ p.minutos | duracao }}</span>
+          </div>
+        }
+      </section>
+    </div>
+
+    <h2 class="titulo-tabela">Pessoa por projeto</h2>
+    <div class="tabela">
+      <table mat-table [dataSource]="d.linhas">
+        <ng-container matColumnDef="projeto">
+          <th mat-header-cell *matHeaderCellDef>Projeto</th>
+          <td mat-cell *matCellDef="let l">{{ l.projetoNome }}</td>
+        </ng-container>
+        <ng-container matColumnDef="pessoa">
+          <th mat-header-cell *matHeaderCellDef>Pessoa</th>
+          <td mat-cell *matCellDef="let l">{{ l.usuarioNome }}</td>
+        </ng-container>
+        <ng-container matColumnDef="horas">
+          <th mat-header-cell *matHeaderCellDef class="numerico">Horas</th>
+          <td mat-cell *matCellDef="let l" class="numerico">{{ l.minutos | duracao }}</td>
+        </ng-container>
+        <ng-container matColumnDef="parcela">
+          <th mat-header-cell *matHeaderCellDef class="numerico">% do projeto</th>
+          <td mat-cell *matCellDef="let l" class="numerico">{{ parcela(l.projetoId, l.minutos) * 100 | number: '1.0-0' }}%</td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="colunas"></tr>
+        <tr mat-row *matRowDef="let linha; columns: colunas"></tr>
+      </table>
+    </div>
+  }
+}

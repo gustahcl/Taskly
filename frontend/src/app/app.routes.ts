@@ -31,6 +31,17 @@ export const routes: Routes = [
         loadChildren: () => import('./features/projetos/projetos.routes').then((m) => m.PROJETOS_ROUTES),
       },
       {
+        path: 'horas',
+        title: 'Minhas horas · Taskly',
+        loadComponent: () => import('./features/horas/minhas-horas/minhas-horas').then((m) => m.MinhasHoras),
+      },
+      {
+        path: 'horas/consolidado',
+        canActivate: [perfilGuard('ADMIN', 'GERENTE')],
+        title: 'Consolidado de horas · Taskly',
+        loadComponent: () => import('./features/horas/consolidado/consolidado').then((m) => m.Consolidado),
+      },
+      {
         path: 'usuarios',
         canActivate: [perfilGuard('ADMIN')],
         title: 'Usuários · Taskly',

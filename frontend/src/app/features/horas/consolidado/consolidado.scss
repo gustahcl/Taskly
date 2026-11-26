@@ -1,0 +1,143 @@
+.topo {
+  margin-bottom: 16px;
+
+  h1 {
+    margin: 0 0 4px;
+    font: var(--mat-sys-headline-medium);
+  }
+}
+
+.subtitulo {
+  margin: 0;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.filtros {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+
+  .projeto {
+    min-width: 220px;
+  }
+}
+
+.numeros {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 16px 0 24px;
+}
+
+.numero {
+  display: flex;
+  flex-direction: column;
+  min-width: 160px;
+  padding: 16px 20px;
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 12px;
+  background: var(--mat-sys-surface-container-low);
+
+  .valor {
+    font: var(--mat-sys-headline-medium);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .legenda {
+    color: var(--mat-sys-on-surface-variant);
+    font: var(--mat-sys-body-small);
+  }
+}
+
+.paineis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 16px;
+}
+
+.painel {
+  padding: 16px 20px;
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 12px;
+
+  h2 {
+    margin: 0 0 12px;
+    font: var(--mat-sys-title-medium);
+  }
+}
+
+.barra-linha {
+  display: grid;
+  grid-template-columns: minmax(100px, 160px) 1fr 56px;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 0;
+
+  .nome {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    small {
+      display: block;
+      color: var(--mat-sys-on-surface-variant);
+    }
+  }
+
+  .horas {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    font-weight: 500;
+  }
+}
+
+.barra {
+  height: 10px;
+  border-radius: 5px;
+  background: var(--mat-sys-surface-container-highest);
+  overflow: hidden;
+
+  span {
+    display: block;
+    height: 100%;
+    border-radius: 5px;
+    background: var(--mat-sys-primary);
+  }
+}
+
+.titulo-tabela {
+  margin: 24px 0 8px;
+  font: var(--mat-sys-title-medium);
+}
+
+.tabela {
+  overflow-x: auto;
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 12px;
+}
+
+.numerico {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.vazio {
+  padding: 40px 16px;
+  text-align: center;
+  color: var(--mat-sys-on-surface-variant);
+
+  mat-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 40px;
+  }
+}
+
+.erro {
+  padding: 12px;
+  border-radius: 8px;
+  background: var(--mat-sys-error-container);
+  color: var(--mat-sys-on-error-container);
+}

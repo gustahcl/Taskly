@@ -21,6 +21,71 @@
   grid-column: 1 / -1;
 }
 
+.horas {
+  margin-bottom: 24px;
+
+  .titulo-secao {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+
+  h3 {
+    margin: 0;
+    font: var(--mat-sys-title-medium);
+  }
+
+  .total {
+    margin-left: 8px;
+    color: var(--mat-sys-on-surface-variant);
+  }
+}
+
+.apontamento {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 8px;
+
+  .duracao {
+    min-width: 48px;
+    padding-top: 4px;
+    font: var(--mat-sys-title-small);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .corpo {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .autor {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 28px;
+
+    span {
+      color: var(--mat-sys-on-surface-variant);
+      font: var(--mat-sys-body-small);
+    }
+  }
+
+  .botoes {
+    margin-left: auto;
+
+    button {
+      transform: scale(0.8);
+    }
+  }
+
+  p {
+    margin: 2px 0 0;
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+  }
+}
+
 .comentarios {
   h3 {
     margin: 0 0 12px;
