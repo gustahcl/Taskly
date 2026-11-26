@@ -3,7 +3,8 @@
 Plataforma de gestão de projetos e tarefas com quadro kanban e apontamento de horas.
 
 > **Status:** MVP em desenvolvimento. Já funcionam cadastro e login com JWT, perfis de acesso,
-> projetos com equipe e papéis, e quadros kanban com tarefas, comentários e drag-and-drop.
+> projetos com equipe e papéis, quadros kanban com tarefas, comentários e drag-and-drop, e apontamento
+> de horas com visão semanal e consolidado para o gestor.
 
 ## Stack
 
@@ -61,6 +62,10 @@ cd frontend && npm test -- --watch=false      # Vitest
 - **Projetos:** cliente, datas, status e equipe. Cada membro é gestor ou colaborador do projeto.
 - **Kanban:** quadros com colunas configuráveis, tarefas com responsável, prioridade e prazo,
   comentários, drag-and-drop entre colunas e filtros.
+- **Apontamento de horas:** cada pessoa registra as horas trabalhadas por tarefa (ex.: `1h30`, `45m`),
+  numa tela semanal com o total de cada dia ou direto no detalhe da tarefa. Limite diário configurável
+  (12h por padrão), sem datas futuras, e só o autor edita. O gestor vê o consolidado por pessoa e por
+  projeto em qualquer período.
 
 A lista completa de rotas da API está no [README do back-end](backend/README.md).
 
@@ -70,7 +75,7 @@ A lista completa de rotas da API está no [README do back-end](backend/README.md
 - [x] Telas de login, cadastro e layout no Angular
 - [x] Projetos e membros
 - [x] Quadros e tarefas com kanban (drag-and-drop)
-- [ ] Apontamento de horas
+- [x] Apontamento de horas
 - [ ] Dashboard
 - [ ] Testes, CI e deploy
 - [ ] Tempo real (WebSocket) e histórico de alterações
